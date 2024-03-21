@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="redlib.backend.dao.BookLogMapper">
+  <resultMap id="BaseResultMap" type="redlib.backend.model.BookLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="reader_name" jdbcType="CHAR" property="readerName" />
+    <result column="book_id" jdbcType="INTEGER" property="bookId" />
+    <result column="book_name" jdbcType="CHAR" property="bookName" />
+    <result column="book_isbn" jdbcType="CHAR" property="bookIsbn" />
+    <result column="borrowed_time" jdbcType="DATE" property="borrowedTime" />
+    <result column="return_time" jdbcType="DATE" property="returnTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, reader_name, book_id, book_name, book_isbn, borrowed_time, return_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from book_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from book_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="redlib.backend.model.BookLog">
+    insert into book_log (id, reader_name, book_id, 
+      book_name, book_isbn, borrowed_time, 
+      return_time)
+    values (#{id,jdbcType=INTEGER}, #{readerName,jdbcType=CHAR}, #{bookId,jdbcType=INTEGER}, 
+      #{bookName,jdbcType=CHAR}, #{bookIsbn,jdbcType=CHAR}, #{borrowedTime,jdbcType=DATE}, 
+      #{returnTime,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="redlib.backend.model.BookLog">
+    insert into book_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="readerName != null">
+        reader_name,
+      </if>
+      <if test="bookId != null">
+        book_id,
+      </if>
+      <if test="bookName != null">
+        book_name,
+      </if>
+      <if test="bookIsbn != null">
+        book_isbn,
+      </if>
+      <if test="borrowedTime != null">
+        borrowed_time,
+      </if>
+      <if test="returnTime != null">
+        return_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="readerName != null">
+        #{readerName,jdbcType=CHAR},
+      </if>
+      <if test="bookId != null">
+        #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="bookName != null">
+        #{bookName,jdbcType=CHAR},
+      </if>
+      <if test="bookIsbn != null">
+        #{bookIsbn,jdbcType=CHAR},
+      </if>
+      <if test="borrowedTime != null">
+        #{borrowedTime,jdbcType=DATE},
+      </if>
+      <if test="returnTime != null">
+        #{returnTime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="redlib.backend.model.BookLog">
+    update book_log
+    <set>
+      <if test="readerName != null">
+        reader_name = #{readerName,jdbcType=CHAR},
+      </if>
+      <if test="bookId != null">
+        book_id = #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="bookName != null">
+        book_name = #{bookName,jdbcType=CHAR},
+      </if>
+      <if test="bookIsbn != null">
+        book_isbn = #{bookIsbn,jdbcType=CHAR},
+      </if>
+      <if test="borrowedTime != null">
+        borrowed_time = #{borrowedTime,jdbcType=DATE},
+      </if>
+      <if test="returnTime != null">
+        return_time = #{returnTime,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="redlib.backend.model.BookLog">
+    update book_log
+    set reader_name = #{readerName,jdbcType=CHAR},
+      book_id = #{bookId,jdbcType=INTEGER},
+      book_name = #{bookName,jdbcType=CHAR},
+      book_isbn = #{bookIsbn,jdbcType=CHAR},
+      borrowed_time = #{borrowedTime,jdbcType=DATE},
+      return_time = #{returnTime,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+  <!-- 获取名字个数(分页) -->
+  <select id="count" resultType="integer">
+    select count(*)
+    from book_log
+    <where>
+      <if test="bookName != null">
+        book_name like #{bookName}
+      </if>
+    </where>
+  </select>
+
+  <!-- 获取书籍(分页) -->
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from book_log
+    <where>
+      <if test="queryDTO.readerName != null">
+        and reader_name like #{queryDTO.readerName}
+      </if>
+      <if test="queryDTO.bookName != null">
+        and book_name like #{queryDTO.bookName}
+      </if>
+    </where>
+    <if test="queryDTO.orderBy != null">
+      order by ${queryDTO.orderBy}
+    </if>
+    <if test="queryDTO.orderBy == null">
+      order by id desc
+    </if>
+    limit #{offset}, #{limit}
+  </select>
+
+  <!-- 批量删除 -->
+  <update id="deleteByCodes">
+    delete from book_log
+    where id in
+    <foreach item="item" index="index" collection="codeList" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+
+  <!-- 获取对应借出书籍的日志记录 -->
+  <update id="insertTime" parameterType="java.lang.Integer">
+    update book_log
+    set return_time = now()
+    where book_id = #{id,jdbcType=INTEGER}
+    order by id desc
+    limit 1
+  </update>
+
+  <select id="getAllBookLogInformation" resultMap="BaseResultMap">
+    select * from book_log
+    order by borrowed_time asc
+  </select>
+
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.AdminMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.Admin">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_code" property="userCode" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="enabled" property="enabled" jdbcType="BIT"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="created_by" jdbcType="INTEGER" property="createdBy"/>
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt"/>
+        <result column="updated_by" jdbcType="INTEGER" property="updatedBy"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , user_code, name, sex, enabled, password, department, phone, email, created_at, created_by, updated_at, updated_by
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByUserCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where user_code = #{userCode}
+    </select>
+
+    <select id="login" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where user_code = #{userCode} and password=#{password}
+    </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="redlib.backend.model.Admin" keyProperty="id" useGeneratedKeys="true">
+        insert into admin (user_code, name, sex,
+                           enabled, password, department,
+                           phone, email, created_by, updated_by)
+        values (#{userCode,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT},
+                #{enabled,jdbcType=BIT}, #{password,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR},
+                #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{createdBy,jdbcType=INTEGER},
+                #{updatedBy,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="redlib.backend.model.Admin">
+        update admin
+        set name = #{name,jdbcType=VARCHAR},
+        sex = #{sex,jdbcType=TINYINT},
+        enabled = #{enabled,jdbcType=BIT},
+        <if test="password != null">
+            password = #{password,jdbcType=CHAR},
+        </if>
+        department = #{department,jdbcType=VARCHAR},
+        phone = #{phone,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR},
+        updated_by = #{updatedBy,jdbcType=INTEGER}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 根据id列表获取角色列表 -->
+    <select id="listByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--查询（分页）-->
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        <where>
+            <if test="queryDTO.keyword != null">
+                ( name like #{queryDTO.keyword} or user_code like #{queryDTO.keyword} or department like
+                #{queryDTO.keyword} )
+            </if>
+        </where>
+        <if test="queryDTO.orderBy != null">
+            order by ${queryDTO.orderBy}
+        </if>
+        <if test="queryDTO.orderBy == null">
+            order by id desc
+        </if>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询订单列表（分页）命中个数-->
+    <select id="count" resultType="integer">
+        select count(*) from admin
+        <where>
+            <if test="queryDTO.keyword != null">
+                ( name like #{queryDTO.keyword} or user_code like #{queryDTO.keyword} or department like
+                #{queryDTO.keyword} )
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据code列表删除 -->
+    <delete id="delete">
+        delete
+        from admin
+        where user_code in
+        <foreach item="item" index="index" collection="userCodes" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

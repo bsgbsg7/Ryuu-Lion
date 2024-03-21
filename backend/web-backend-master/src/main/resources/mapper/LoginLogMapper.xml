@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="redlib.backend.dao.LoginLogMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.LoginLog">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_code" jdbcType="VARCHAR" property="userCode"/>
+        <result column="ip_address" jdbcType="VARCHAR" property="ipAddress"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="os" jdbcType="VARCHAR" property="os"/>
+        <result column="browser" jdbcType="VARCHAR" property="browser"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , user_code, ip_address, name, os, browser, created_at
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from login_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from login_log
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="redlib.backend.model.LoginLog">
+        insert into login_log (id, user_code, ip_address,
+                               name, os, browser)
+        values (#{id,jdbcType=BIGINT}, #{userCode,jdbcType=VARCHAR}, #{ipAddress,jdbcType=VARCHAR},
+                #{name,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR}, #{browser,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="redlib.backend.model.LoginLog">
+        update login_log
+        set user_code  = #{userCode,jdbcType=VARCHAR},
+            ip_address = #{ipAddress,jdbcType=VARCHAR},
+            name       = #{name,jdbcType=VARCHAR},
+            os         = #{os,jdbcType=VARCHAR},
+            browser    = #{browser,jdbcType=VARCHAR},
+            created_at = #{createdAt,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--查询（分页）-->
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from login_log
+        <where>
+            <if test="queryDTO.userCode != null">
+                and user_code=#{queryDTO.userCode}
+            </if>
+            <if test="queryDTO.ipAddress != null">
+                and ip_address=#{queryDTO.ipAddress}
+            </if>
+            <if test="queryDTO.createdAt != null">
+                and date(created_at)=date(#{queryDTO.createdAt})
+            </if>
+        </where>
+        <if test="queryDTO.orderBy != null">
+            order by ${queryDTO.orderBy}
+        </if>
+        <if test="queryDTO.orderBy == null">
+            order by id desc
+        </if>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询订单列表（分页）命中个数-->
+    <select id="count" resultType="integer">
+        select count(*) from login_log
+        <where>
+            <if test="queryDTO.userCode != null">
+                and user_code=#{queryDTO.userCode}
+            </if>
+            <if test="queryDTO.ipAddress != null">
+                and ip_address=#{queryDTO.ipAddress}
+            </if>
+            <if test="queryDTO.createdAt != null">
+                and date(created_at)=date(#{queryDTO.createdAt})
+            </if>
+        </where>
+    </select>
+
+</mapper>

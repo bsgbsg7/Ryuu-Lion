@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.DepartmentMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.Department">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="department_name" property="departmentName" jdbcType="VARCHAR"/>
+        <result column="contact" property="contact" jdbcType="VARCHAR"/>
+        <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
+        <result column="updated_by" property="updatedBy" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , department_name, contact, contact_phone, description,
+    created_at, updated_at, created_by, updated_by
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="redlib.backend.model.Department">
+        insert into department (id,
+                                department_name, contact, contact_phone,
+                                description, created_by, updated_by)
+        values (#{id,jdbcType=INTEGER},
+                #{departmentName,jdbcType=VARCHAR}, #{contact,jdbcType=VARCHAR}, #{contactPhone,jdbcType=VARCHAR},
+                #{description,jdbcType=VARCHAR}, #{createdBy,jdbcType=VARCHAR}, #{updatedBy,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="redlib.backend.model.Department">
+        update department
+        set department_name = #{departmentName,jdbcType=VARCHAR},
+            contact         = #{contact,jdbcType=VARCHAR},
+            contact_phone   = #{contactPhone,jdbcType=VARCHAR},
+            description     = #{description,jdbcType=VARCHAR},
+            updated_by      = #{updatedBy,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 获取名字个数(分页) -->
+    <select id="count" resultType="integer">
+        select count(*)
+        from department
+        <where>
+            <if test="departmentName != null">
+                department_name like #{departmentName}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 获取名字 -->
+    <select id="getByName" resultMap="BaseResultMap">
+        select  *
+        from department
+        where department_name = *{name}
+    </select>
+
+    <!-- 获取部门(分页) -->
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        <where>
+            <if test="queryDTO.departmentName != null">
+                department_name like #{queryDTO.departmentName}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 批量删除 -->
+    <update id="deleteByCodes">
+        delete from department
+        where id in
+        <foreach item="item" index="index" collection="codeList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

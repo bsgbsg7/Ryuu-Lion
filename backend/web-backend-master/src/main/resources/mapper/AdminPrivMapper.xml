@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.AdminPrivMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.AdminPriv">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="admin_id" property="adminId" jdbcType="INTEGER"/>
+        <result column="mod_id" property="modId" jdbcType="VARCHAR"/>
+        <result column="priv" property="priv" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , admin_id, mod_id, priv
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from admin_priv
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from admin_priv
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="redlib.backend.model.AdminPriv">
+        insert into admin_priv (id, admin_id, mod_id,
+                                priv)
+        values (#{id,jdbcType=INTEGER}, #{adminId,jdbcType=INTEGER}, #{modId,jdbcType=VARCHAR},
+                #{priv,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="redlib.backend.model.AdminPriv">
+        update admin_priv
+        set admin_id = #{adminId,jdbcType=INTEGER},
+            mod_id   = #{modId,jdbcType=VARCHAR},
+            priv     = #{priv,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from admin_priv
+        where admin_id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByAdminId" parameterType="java.lang.Integer">
+        delete
+        from admin_priv
+        where admin_id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

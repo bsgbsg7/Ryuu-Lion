@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="redlib.backend.dao.BookMapper">
+  <resultMap id="BaseResultMap" type="redlib.backend.model.Book">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="CHAR" property="name" />
+    <result column="isbn" jdbcType="CHAR" property="isbn" />
+    <result column="author" jdbcType="CHAR" property="author" />
+    <result column="publisher" jdbcType="CHAR" property="publisher" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="category" jdbcType="CHAR" property="category" />
+    <result column="bought_time" jdbcType="DATE" property="boughtTime" />
+    <result column="published_time" jdbcType="DATE" property="publishedTime" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="classification" jdbcType="CHAR" property="classification" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, isbn, author, publisher, price, category, bought_time, published_time, 
+    status, classification
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from book
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from book
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="redlib.backend.model.Book">
+    insert into book (id, name, isbn, author, 
+      publisher, price, category, 
+      bought_time, published_time, status, 
+      classification)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=CHAR}, #{isbn,jdbcType=CHAR}, #{author,jdbcType=CHAR}, 
+      #{publisher,jdbcType=CHAR}, #{price,jdbcType=DOUBLE}, #{category,jdbcType=CHAR}, 
+      #{boughtTime,jdbcType=DATE}, #{publishedTime,jdbcType=DATE}, #{status,jdbcType=CHAR}, 
+      #{classification,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="redlib.backend.model.Book">
+    insert into book
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="isbn != null">
+        isbn,
+      </if>
+      <if test="author != null">
+        author,
+      </if>
+      <if test="publisher != null">
+        publisher,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="boughtTime != null">
+        bought_time,
+      </if>
+      <if test="publishedTime != null">
+        published_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="classification != null">
+        classification,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=CHAR},
+      </if>
+      <if test="isbn != null">
+        #{isbn,jdbcType=CHAR},
+      </if>
+      <if test="author != null">
+        #{author,jdbcType=CHAR},
+      </if>
+      <if test="publisher != null">
+        #{publisher,jdbcType=CHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=CHAR},
+      </if>
+      <if test="boughtTime != null">
+        #{boughtTime,jdbcType=DATE},
+      </if>
+      <if test="publishedTime != null">
+        #{publishedTime,jdbcType=DATE},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="classification != null">
+        #{classification,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="redlib.backend.model.Book">
+    update book
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=CHAR},
+      </if>
+      <if test="isbn != null">
+        isbn = #{isbn,jdbcType=CHAR},
+      </if>
+      <if test="author != null">
+        author = #{author,jdbcType=CHAR},
+      </if>
+      <if test="publisher != null">
+        publisher = #{publisher,jdbcType=CHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=CHAR},
+      </if>
+      <if test="boughtTime != null">
+        bought_time = #{boughtTime,jdbcType=DATE},
+      </if>
+      <if test="publishedTime != null">
+        published_time = #{publishedTime,jdbcType=DATE},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="classification != null">
+        classification = #{classification,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="redlib.backend.model.Book">
+    update book
+    set name = #{name,jdbcType=CHAR},
+      isbn = #{isbn,jdbcType=CHAR},
+      author = #{author,jdbcType=CHAR},
+      publisher = #{publisher,jdbcType=CHAR},
+      price = #{price,jdbcType=DOUBLE},
+      category = #{category,jdbcType=CHAR},
+      bought_time = #{boughtTime,jdbcType=DATE},
+      published_time = #{publishedTime,jdbcType=DATE},
+      status = #{status,jdbcType=CHAR},
+      classification = #{classification,jdbcType=CHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <!-- 获取名字个数(分页) -->
+  <select id="count" resultType="integer">
+    select count(*)
+    from book
+    <where>
+      <if test="name != null">
+        name like #{name}
+      </if>
+    </where>
+  </select>
+
+  <!-- 获取书籍(分页) -->
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from book
+    <where>
+      <if test="queryDTO.name != null ">
+        and name like #{queryDTO.name}
+      </if>
+      <if test="queryDTO.isbn != null">
+        and isbn like #{queryDTO.isbn}
+      </if>
+      <if test="queryDTO.author != null">
+        and author like #{queryDTO.author}
+      </if>
+      <if test="queryDTO.publisher != null">
+        and publisher like #{queryDTO.publisher}
+      </if>
+      <if test="queryDTO.category != null">
+        and category like #{queryDTO.category}
+      </if>
+      <if test="queryDTO.status != null">
+        and status like #{queryDTO.status}
+      </if>
+      <if test="queryDTO.classification != null">
+        and classification like #{queryDTO.classification}
+      </if>
+    </where>
+    limit #{offset}, #{limit}
+  </select>
+
+  <!-- 批量删除 -->
+  <update id="deleteByCodes">
+    delete from book
+    where id in
+    <foreach item="item" index="index" collection="codeList" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+
+  <!-- 获取数据库中的信息 -->
+  <select id="getAllBookInformation" resultMap="BaseResultMap">
+    select * from book
+  </select>
+
+
+
+</mapper>
